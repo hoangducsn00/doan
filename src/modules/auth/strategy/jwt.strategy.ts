@@ -16,9 +16,6 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     async validate(payload: any, done: VerifiedCallback) {
         const admins = await this.adminRepository.find({
             where: { id: payload.id },
-            relations: {
-                role: true,
-            },
             take: 1,
         });
         if (!admins.length) {

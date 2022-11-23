@@ -21,9 +21,6 @@ export class AuthService {
     async validateAdmin(email: string, password: string): Promise<Partial<Admin>> {
         const admins = await this.adminRepository.find({
             where: { email: email },
-            relations: {
-                role: true,
-            },
             take: 1,
         });
         if (!admins.length) {
@@ -36,13 +33,12 @@ export class AuthService {
         return {
             id: admins[0].id,
             email: admins[0].email,
-            role: admins[0].role,
         };
     }
 
     async login(req: Request): Promise<any> {
         const user: Partial<Admin> = req.user;
-        const payload = { email: user.email, role: user.role.id, id: user.id };
+        const payload = { email: user.email, id: user.id };
         return {
             access_token: this.jwtService.sign(payload),
             refresh_token: this.jwtService.sign(payload, this.refreshTokenConfig),
