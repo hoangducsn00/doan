@@ -1,5 +1,6 @@
 import { TypeOrmModuleOptions } from '@nestjs/typeorm/dist/interfaces/typeorm-options.interface';
 import { Admin } from '../admin/entity/admin.entity';
+import { User } from '../user/entity/user.entity';
 
 export const defaultConfig: TypeOrmModuleOptions = {
     type: 'mysql',
@@ -11,9 +12,10 @@ export const defaultConfig: TypeOrmModuleOptions = {
     // autoLoadEntities: true,
     entities: [
         Admin,
+        User,
         // ReceivedMessage,
     ],
-    synchronize: true,
+    synchronize: false,
     logging: true,
     ssl: true,
     extra: {

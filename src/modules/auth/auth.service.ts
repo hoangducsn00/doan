@@ -3,8 +3,9 @@ import * as bcrypt from 'bcrypt';
 import { Request } from 'express';
 import { JwtService } from '@nestjs/jwt';
 import { ResponseAuthDto } from './dto/responseAuth.dto';
-import { AdminRepository } from '../admin/repository/admin.repository';
 import { Admin } from '../admin/entity/admin.entity';
+import { User } from '../user/entity/user.entity';
+import { UserRepository } from '../user/repository/user.repository';
 
 @Injectable()
 export class AuthService {
@@ -14,31 +15,26 @@ export class AuthService {
     };
 
     constructor(
-        private adminRepository: AdminRepository,
+        private userRepository: UserRepository,
         private jwtService: JwtService,
     ) {}
 
-    async validateAdmin(email: string, password: string): Promise<Partial<Admin>> {
-        const admins = await this.adminRepository.find({
-            where: { email: email },
-            take: 1,
-        });
-        if (!admins.length) {
-            throw new BadRequestException({ message: 'Admin is not exist' });
+    async validateUser(username: string, password: string): Promise<Partial<User>> {
+        const user = await this.userRepository.findOneBy({ username: username });
+        if (!user) {
+            throw new BadRequestException({ message: 'user is not exist' });
         }
-        const comparePassword = await bcrypt.compare(password, admins[0].password);
+        const comparePassword = await bcrypt.compare(password, user.password);
         if (!comparePassword) {
             throw new ForbiddenException({ message: 'Password was wrong' });
         }
-        return {
-            id: admins[0].id,
-            email: admins[0].email,
-        };
+        return user;
     }
 
+
     async login(req: Request): Promise<any> {
-        const user: Partial<Admin> = req.user;
-        const payload = { email: user.email, id: user.id };
+        const user: Partial<User> = req.user;
+        const payload = { email: user.email, id: user.id,role : user.role};
         return {
             access_token: this.jwtService.sign(payload),
             refresh_token: this.jwtService.sign(payload, this.refreshTokenConfig),

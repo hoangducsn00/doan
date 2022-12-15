@@ -8,7 +8,7 @@ export class LoginUserDto {
     @IsNotEmpty()
     @IsEmail()
     @Expose()
-    readonly email: string;
+    readonly username: string;
 
     @ApiProperty()
     @IsString()

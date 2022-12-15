@@ -6,8 +6,3 @@ export const jwtConstants = {
     refreshTokenExpires: process.env.REFRESH_TOKEN_EXPIRY,
 };
 
-export enum Role {
-    NONE,
-    SUPER_ADMIN,
-    ADMIN,
-}
