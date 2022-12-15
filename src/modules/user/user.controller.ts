@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiParam, ApiTags } from '@nestjs/swagger';
 import { Roles } from '../auth/decorator/roles.decorator';
 import { JWTAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -6,6 +6,7 @@ import { RolesGuard } from '../auth/guards/roles.guard';
 import { UserService } from './user.service';
 import { CreateUserDto, Role } from './dto/createUser.dto';
 import { UpdateUserDto } from './dto/updateUser.dto';
+import { SearchDto } from './dto/search.dto';
 
 @Controller('user')
 @ApiBearerAuth()
@@ -19,10 +20,10 @@ export class UserController{
     }
 
     @Get()
-    @Roles(Role.User)
-    @UseGuards(JWTAuthGuard,RolesGuard)
-    async getAllUser(){
-        return this.userService.getAllUser();
+    // @Roles(Role.User)
+    // @UseGuards(JWTAuthGuard,RolesGuard)
+    async getAllUser(@Query() option : SearchDto){
+        return this.userService.getAllUser(option);
     }
 
     @Delete(':id')
@@ -44,4 +45,6 @@ export class UserController{
     async updateUser(@Param('id') id: number,@Body() updateDto : UpdateUserDto){
         return this.userService.updateUser(id,updateDto);
     }
+
+
 }

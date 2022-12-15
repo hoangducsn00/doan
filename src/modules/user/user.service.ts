@@ -4,6 +4,7 @@ import { tsTsxJsJsxRegex } from 'ts-loader/dist/constants';
 import { User } from './entity/user.entity';
 import { CreateUserDto, Role } from './dto/createUser.dto';
 import { UpdateUserDto } from './dto/updateUser.dto';
+import { SearchDto } from './dto/search.dto';
 
 @Injectable()
 export class UserService {
@@ -19,8 +20,9 @@ export class UserService {
         await this.userRepository.save(user);
     }
 
-    async getAllUser() {
-        return this.userRepository.findBy({ role: Role.User });
+    async getAllUser(option: SearchDto) {
+        // return this.userRepository.findBy({ role: Role.User });
+        return this.userRepository.getAllUser(option);
     }
 
     async deleteUser(id: number) {
