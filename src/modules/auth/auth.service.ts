@@ -1,11 +1,11 @@
-import { BadRequestException, ForbiddenException, Injectable, UnauthorizedException } from '@nestjs/common';
+import {BadRequestException, ForbiddenException, Injectable, UnauthorizedException} from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
-import { Request } from 'express';
-import { JwtService } from '@nestjs/jwt';
-import { ResponseAuthDto } from './dto/responseAuth.dto';
-import { Admin } from '../admin/entity/admin.entity';
-import { User } from '../user/entity/user.entity';
-import { UserRepository } from '../user/repository/user.repository';
+import {Request} from 'express';
+import {JwtService} from '@nestjs/jwt';
+import {ResponseAuthDto} from './dto/responseAuth.dto';
+import {User} from '../user/entity/user.entity';
+import {UserRepository} from '../user/repository/user.repository';
+import {CreateUserDto, Role} from "../user/dto/createUser.dto";
 
 @Injectable()
 export class AuthService {
@@ -22,7 +22,7 @@ export class AuthService {
     async validateUser(username: string, password: string): Promise<Partial<User>> {
         const user = await this.userRepository.findOneBy({ username: username });
         if (!user) {
-            throw new BadRequestException({ message: 'user is not exist' });
+            throw new BadRequestException({ message: 'User is not exist' });
         }
         const comparePassword = await bcrypt.compare(password, user.password);
         if (!comparePassword) {
@@ -51,5 +51,22 @@ export class AuthService {
         return {
             access_token: this.jwtService.sign(refreshTokenDecode),
         };
+    }
+
+    async createUser(createUserDto: CreateUserDto) {
+        const user = new User();
+        user.email = createUserDto.email;
+        user.password = createUserDto.password;
+        user.username = createUserDto.username;
+        user.role = Role.User;
+        const checkUsername = await this.userRepository.findOneBy({username: user.username});
+        const checkEmail = await this.userRepository.findOneBy({email: user.email});
+        if (checkUsername) {
+            throw new BadRequestException({message: 'Username already exists'});
+        }
+        if (checkEmail) {
+            throw new BadRequestException({message: 'Email already exists'});
+        }
+        await this.userRepository.save(user);
     }
 }

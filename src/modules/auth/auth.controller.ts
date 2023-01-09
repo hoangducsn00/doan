@@ -6,6 +6,7 @@ import { Request } from 'express';
 import { GetAccessTokenForm } from './dto/getAccessToken.dto';
 import { ResponseAuthDto } from './dto/responseAuth.dto';
 import { LocalAuthGuard } from './guards/local-auth.guard';
+import {CreateUserDto} from "../user/dto/createUser.dto";
 
 @Controller('auth')
 @ApiTags('Auth')
@@ -31,5 +32,10 @@ export class AuthController {
         } catch (e) {
             throw new Error(e);
         }
+    }
+
+    @Post('signup')
+    async createUser(@Body() createUserDto: CreateUserDto){
+        return this.authService.createUser(createUserDto);
     }
 }
